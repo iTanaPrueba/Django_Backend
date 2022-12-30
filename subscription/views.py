@@ -38,7 +38,7 @@ def subscription_mobile_api_view(request):
                 return Response(mobile_serializer.errors)
 
 
-@api_view(['GET', 'PUT'])
+@api_view(['GET', 'PUT', 'DELETE'])
 def subscription_mobile_detail_view(request, id=None):
     if request.method == 'GET':
         mobile = Mobile.objects.filter(id=id).first()
@@ -53,3 +53,8 @@ def subscription_mobile_detail_view(request, id=None):
                 return Response(mobile_serializer.data)
             else:
                 return Response(mobile_serializer.errors)
+        else:
+            if request.method == 'DELETE':
+                mobile = Mobile.objects.filter(id=id).first()
+                mobile.delete()
+                return Response('DELETED')
