@@ -6,64 +6,29 @@ from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import permissions
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from subscription.models import Mobile
+from subscription.serializers import MobileSerializer
 
 
 # Create your views here.
 
-class MobileView(View):
+# class MobileView(APIView):
+#    def get(self, request):
+#        mobiles = Mobile.objects.all()
+#        mobile_serializer = MobileSerializer(mobiles, many=True)
+#        return Response(mobile_serializer.data)
 
-    @method_decorator(csrf_exempt)
-    def dispatch(self, request, *args, **kwargs):
-        return super().dispatch(request, *args, **kwargs)
+@api_view(['GET', 'POST'])
+def subscription_mobile_api_view(request):
 
-    def get(self, request, id=0):
-        if id > 0:
-            mobiles = list(Mobile.objects.filter(id=id).values())
-            if len(mobiles) > 0:
-                mobile = mobiles[0]
-                message = {'message': "Success", "mobiles:": mobile}
-            else:
-                message = {'message': "Companies not found ..."}
-        else:
-            mobiles = list(Mobile.objects.values())
-            # permission = [permissions.AllowAny]
-            if len(mobiles) > 0:
-                message = {'message': "Success", "mobiles:": mobiles}
-            else:
-                message = {'message': "Mobiles not found..."}
-
-        return JsonResponse(message)
-
-    def post(self, request):
-        jd = json.loads(request.body)
-        Mobile.objects.create(month=jd['month'], network=jd['network'], plan=jd['plan'],
-                              subscriptions=jd['subscriptions'])
-        message = {'message': 'Success'}
-        return JsonResponse(message)
-
-    def put(self, request, id):
-        jd = json.loads(request.body)
-        mobiles = list(Mobile.objects.filter(id=id).values())
-        if len(mobiles) > 0:
-            mobile = Mobile.objects.get(id=id)
-            mobile.month = jd['month']
-            mobile.network = jd['network']
-            mobile.plan = jd['plan']
-            mobile.subscriptions = jd['subscriptions']
-            mobile.save()
-            message = {'message': "Success"}
-        else:
-            message = {'message': "Company not found"}
-        return JsonResponse(message)
-
-    def delete(self, request, id):
-        mobiles = list(Mobile.objects.filter(id=id).values())
-        if len(mobiles) > 0:
-            Mobile.objects.filter(id=id).delete()
-            message = {'message': "Success"}
-        else:
-            message = {'message': "Company not found..."}
-
-        return JsonResponse(message)
+    if request.method == 'GET':
+        mobiles = Mobile.objects.all()
+        mobile_serializer = MobileSerializer(mobiles, many=True)
+        return Response(mobile_serializer.data)
+    else:
+        if request.method == 'POST':
+            print(request.data)

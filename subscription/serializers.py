@@ -7,3 +7,4 @@ class MobileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Mobile
         fields = '__all__'
+
