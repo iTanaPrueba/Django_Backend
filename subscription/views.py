@@ -31,4 +31,12 @@ def subscription_mobile_api_view(request):
         return Response(mobile_serializer.data)
     else:
         if request.method == 'POST':
-            print(request.data)
+            mobile_serializer = MobileSerializer(data = request.data)
+            if mobile_serializer.is_valid():
+                mobile_serializer.save()
+                return Response(mobile_serializer.data)
+            else:
+                return Response(mobile_serializer.errors)
+
+
+
