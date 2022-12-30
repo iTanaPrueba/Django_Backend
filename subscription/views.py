@@ -24,14 +24,13 @@ from subscription.serializers import MobileSerializer
 
 @api_view(['GET', 'POST'])
 def subscription_mobile_api_view(request):
-
     if request.method == 'GET':
         mobiles = Mobile.objects.all()
         mobile_serializer = MobileSerializer(mobiles, many=True)
         return Response(mobile_serializer.data)
     else:
         if request.method == 'POST':
-            mobile_serializer = MobileSerializer(data = request.data)
+            mobile_serializer = MobileSerializer(data=request.data)
             if mobile_serializer.is_valid():
                 mobile_serializer.save()
                 return Response(mobile_serializer.data)
@@ -39,4 +38,18 @@ def subscription_mobile_api_view(request):
                 return Response(mobile_serializer.errors)
 
 
-
+@api_view(['GET', 'PUT'])
+def subscription_mobile_detail_view(request, id=None):
+    if request.method == 'GET':
+        mobile = Mobile.objects.filter(id=id).first()
+        mobile_serializer = MobileSerializer(mobile)
+        return Response(mobile_serializer.data)
+    else:
+        if request.method == 'PUT':
+            mobile = Mobile.objects.filter(id=id).first()
+            mobile_serializer = MobileSerializer(mobile, data=request.data)
+            if mobile_serializer.is_valid():
+                mobile_serializer.save()
+                return Response(mobile_serializer.data)
+            else:
+                return Response(mobile_serializer.errors)
